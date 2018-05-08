@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+
+import  sys
+import  math
+
+class   BadArgumentError(Exception):
+    def __init__(self, message, errors = "BadArgumentError"):
+        super().__init__(message)
+        self.errors = errors
+
+class   IQ():
+    def __init__(self, average, standard_deviation, minimum = 0, maximum = 201):
+        if average < 0 or standard_deviation < 0 or minimum < 0 or maximum < 0 or maximum > 201 or average > 200:
+            raise BadArgumentError("You need to pass positives arguments")
+        self.standard_deviation = standard_deviation
+        self.average = average
+        self.minimum = minimum
+        self.maximum = maximum
+        self.tab = []
+        for i in range(self.minimum, self.maximum):
+            self.tab.append(getGaussean(self.average, self.standard_deviation, i))
+
+def     man_help():
+    """ This function will print the help """
+    print("USAGE")
+    print("\t./205IQ μ σ [IQ1] [IQ2]\n")
+    print("DESCRIPTION")
+    print("\tμ\tpredetermined menu")
+    print("\tσ\tpredetermined standard deviation")
+    print("\tIQ1\tminimum IQ")
+    print("\tIQ2\tmaximum IQ")
+
+def     getGaussean(average, standard_deviation, x):
+    """"""
+    return 100 * math.exp(-math.pow(x - average, 2) / (2 * pow(standard_deviation, 2))) / (standard_deviation * math.sqrt(2 * math.pi))
+
+def     basicResult(iq):
+    """"""
+    for i in range(len(iq.tab)):
+        print(i, "%.2f" % iq.tab[i])
+
+def     inferiorResult(iq):
+    """"""
+    i = 0
+    result = 0
+    while i < iq.minimum:
+        result += getGaussean(iq.average, iq.standard_deviation, i)
+        i += 0.01
+    print("%.1f%% of people have an IQ inferior to %d" % (result / 100, iq.minimum))
+
+def     intervalResult(iq):
+    """"""
+    i = iq.minimum
+    result = 0
+    while i < iq.maximum:
+        result += getGaussean(iq.average, iq.standard_deviation, i)
+        i += 0.01
+    print("%.1f%% of people have an IQ between %d and %d" % (result / 100, iq.minimum, iq.maximum))
+
+# Do not put more information in this function, it's must be clearer as possible
+def     main():
+    """ Main function who perform program's core action like arguments resolution """
+    try:
+        if len(sys.argv) == 2:
+            if sys.argv[1] == "-h":
+                man_help()
+            else:
+                raise BadArgumentError("./205IQ: Invalid argument, (try -h)")
+        elif len(sys.argv) == 3:
+            iq = IQ(int(sys.argv[1]), int(sys.argv[2]))
+            basicResult(iq)
+        elif len(sys.argv) == 4:
+            iq = IQ(int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]))
+            inferiorResult(iq)
+        elif len(sys.argv) == 5:
+            iq = IQ(int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]))
+            intervalResult(iq)
+        else:
+            raise BadArgumentError("./205IQ: Invalid number of parameters, (try -h)")
+    except BaseException as error:
+        sys.stdout.write(str(type(error).__name__) + ": {}\n".format(error))
+        sys.exit(84)
+
+if __name__ == "__main__":
+    main()
